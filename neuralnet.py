@@ -1,3 +1,9 @@
+'''
+	This implements a feedforward neural network. 
+	Learning is achieved through backpropagation and stochastic gradient descent.
+
+'''
+
 import math
 import json
 import ast
@@ -189,121 +195,6 @@ class NeuralNetwork:
 		net_parameters = json.load(raw_net_parameters)
 		raw_net_parameters.close()
 		return net_parameters
-
-
-
-
-
-
-
-
-
-
-
-
-cfg = [784, 196, 10]
-#cfg = [2, 1]
-
-
-net = NeuralNetwork(cfg)
-
-mnist = MNIST("data/mnist/")
-mnist_data = mnist.load_training()
-
-training_data = mnist_data[0:50000]
-validation_data = mnist_data[50000:60000]
-
-
-
-#net.weights = np.array([_w])
-#net.biases = b
-
-
-#x = [1, 0]
-
-#print net.feed_forward(np.array([x]).T)
-
-
-#training_data = []
-'''
-for i in range(100):
-	x = [random.choice([0, 1]) for i in range(cfg[0])]
-	#y = [random.random() for i in range(cfg[-1])]
-	y = _w.dot(x) + b
-	y = 1.0/(1 + math.exp(-y))
-
-
-	x = np.array([x]).T
-	y = np.array([y]).T
-	
-	training_data.append((x, y))
-
-'''
-#validation_data = training_data[30:60]
-
-
-net.stochastic_gradient_descent(training_data, validation_data)
-
-
-
-#print net.feed_forward(np.array([[0,0]]).T)
-#print net.feed_forward(np.array([[1,0]]).T)
-#print net.feed_forward(np.array([[0,1]]).T)
-#print net.feed_forward(np.array([[1,1]]).T)
-
-
-random.shuffle(mnist_data)
-
-
-
-corrects = []
-wrongs = []
-for x, y in mnist_data[0:10000]:
-	r = net.feed_forward(x)
-	if np.argmax(r) == np.argmax(y):
-		corrects.append((x, y))
-	else:
-		wrongs.append((x, y))
-
-
-
-
-i = 34
-print np.argmax(net.feed_forward(wrongs[i][0]))
-mnist.show_image(wrongs[i][0])
-
-
-
-
-
-net.save_parameters("mnist_recognizer2")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
