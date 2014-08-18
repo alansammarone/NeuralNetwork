@@ -57,34 +57,25 @@ class NeuralNetwork:
 
 	def initialize_with_random_parameters(self):
 		self.biases = [np.random.randn(y, 1) for y in self.layers[1:]]
-
-		self.weights = [np.random.randn(y, x) for x, y in zip(self.layers[:-1], self.layers[1:])]
+		self.weights = [np.random.randn(y, x)/np.sqrt(x) for x, y in zip(self.layers[:-1], self.layers[1:])]
+		# Divide the weights by sqrt(x) to make the standart deviation smaller, reducing the chance that neurons will saturate.
 
 
 	def initialize_with_saved_preset(self, preset_name):
 		neural_net_parameters = self.load_parameters(preset_name)
 		self.layers = neural_net_parameters["layers"]
-
 		self.weights = [np.matrix(w) for w in neural_net_parameters["weights"]]
 		self.biases = [np.matrix(b) for b in neural_net_parameters["biases"]]
 
-
-
 	def feed_forward(self, a):
 	
-
-
 		for weight, bias in zip(self.weights, self.biases):
 			a = self.activation_vectorized(np.dot(weight,a) + bias)
 
 		return a
 
-
-
 	def validate_data(self, validation_data):
 		measure_error = False
-
-
 		count = 0
 		if measure_error is True:
 			e = 0
@@ -100,24 +91,17 @@ class NeuralNetwork:
 				r = np.zeros((10, 1))
 				r[np.argmax(a)] = 1.0
 
-
 				if (r == y).all():
 					count += 1
 
-			return " %s / %s" % (count, len(validation_data))
+			return " got %s / %s right. That's %.2f" % (count, len(validation_data), count*100.0/len(validation_data)) + "%."
 
 
+	def stochastic_gradient_descent(self, training_data, test_data=None, epochs=10, batch_size=10, learning_rate=3.0):
 
-
-	def stochastic_gradient_descent(self, training_data, test_data=None):
-
-
-		self.batch_size = 10
-		self.learning_rate = 3.0
-		self.epochs = 5
-
-
-
+		self.batch_size = batch_size
+		self.learning_rate = learning_rate
+		self.epochs = epochs
 
 		for e in range(self.epochs):
 			
@@ -125,9 +109,6 @@ class NeuralNetwork:
 			mini_batches = [training_data[n:n+self.batch_size] for n in range(0, len(training_data), self.batch_size)]
 
 			for batch in mini_batches: self.learn_from_batch(batch)
-			
-			
-
 			if test_data is not None: # Let's see how good we are doing. Behold, that slows down the process considerably.
 				validation_measure = self.validate_data(test_data)	
 				print "Epoch %s: %s" % (e, validation_measure)
@@ -135,8 +116,6 @@ class NeuralNetwork:
 
 
 	def learn_from_batch(self, data):
-
-
 
 
 		delta_nabla_w = [np.zeros(w.shape) for w in self.weights]
@@ -149,9 +128,6 @@ class NeuralNetwork:
 
 		self.weights = [w-((self.learning_rate/len(data))*dnw) for w, dnw in zip(self.weights, delta_nabla_w)]
 		self.biases = [b-((self.learning_rate/len(data))*dnb) for b, dnb in zip(self.biases, delta_nabla_b)]
-
-
-
 
 
 	def get_cost_gradient(self, x, y):
@@ -195,6 +171,20 @@ class NeuralNetwork:
 		net_parameters = json.load(raw_net_parameters)
 		raw_net_parameters.close()
 		return net_parameters
+
+
+
+'''
+NN = NeuralNetwork([784, 50, 10])
+
+handwritten_digits = MNIST("data/mnist")
+training_data = handwritten_digits.load_training()
+np.random.shuffle(training_data)
+NN.stochastic_gradient_descent(training_data[:57000], training_data[57000:], learning_rate=.5)
+NN.save_parameters("my_cool_preset")
+
+'''
+
 
 
 

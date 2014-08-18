@@ -89,25 +89,7 @@ class MNIST(object):
         return data
 
 
-    def show_image(self, data):
-        size = 28, 28
 
-        t = data.tolist()
-        data = []
-        for i in t:
-            data.append(int(i[0]*255))
-
-
-        #print data
-
-        im = Image.new("L", size, 255)
-        imdata = list(im.getdata())
-        #print imdata
-
-        imdata = data
-        im.putdata(imdata)
-        im.show()
-        im.save("oi.png")
 
 
 
